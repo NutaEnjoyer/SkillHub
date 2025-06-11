@@ -34,20 +34,33 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
+        
+        if request.user.is_authenticated and request.user.role == "student":
+            return False
 
         if request.user.is_authenticated and request.user.role == "admin":
             return True
 
-        if hasattr(obj, "course"):
-            course_author = obj.course.author
+        course_author = self.get_course_author(obj)
 
-        elif hasattr(obj, "module"):
-            course_author = obj.module.course.author
-
-        elif hasattr(obj, "lesson"):
-            course_author = obj.lesson.module.course.author
-
-        else:
+        if not course_author:
             return False
 
         return bool(request.user.is_authenticated and course_author == request.user)
+
+    def get_course_author(self, obj):
+        try:
+            if hasattr(obj, "course"):
+                return obj.course.author
+            if hasattr(obj, "module"):
+                return obj.module.course.author
+            if hasattr(obj, "lesson"):
+                return obj.lesson.module.course.author
+            if hasattr(obj, "quiz"):
+                return obj.quiz.lesson.module.course.author
+            if hasattr(obj, "question"):
+                return obj.question.quiz.lesson.module.course.author
+            if hasattr(obj, "answer"):
+                return obj.answer.question.quiz.lesson.module.course.author
+        except AttributeError:
+            return None

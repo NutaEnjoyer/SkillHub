@@ -97,3 +97,42 @@ class Lesson(models.Model):
             )
             self.order = last_order.order + 1 if last_order else 1
         super().save(*args, **kwargs)
+
+
+class Quiz(models.Model):
+    lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name="quiz")
+    title = models.CharField(max_length=255)
+
+    class Meta:
+        verbose_name = "Quiz"
+        verbose_name_plural = "Quizs"
+
+    def __str__(self):
+        return f"{self.title} (Lesson: {self.lesson.title})"
+
+
+class Question(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
+    question_text = models.TextField()
+
+    class Meta:
+        verbose_name = "Quiz Answer"
+        verbose_name_plural = "Quiz Answers"
+
+    def __str__(self):
+        return f"{self.question_text[:30]}"
+
+
+class Answer(models.Model):
+    question = models.ForeignKey(
+        Question, on_delete=models.CASCADE, related_name="options"
+    )
+    option_text = models.CharField(max_length=255)
+    is_correct = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Quiz Answer Option"
+        verbose_name_plural = "Quiz Answer Options"
+
+    def __str__(self):
+        return f"{self.option_text[:30]} (Correct: {self.is_correct})"

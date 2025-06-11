@@ -51,3 +51,18 @@ class CourseSerializer(serializers.ModelSerializer):
             "avg_rating"
         ]
         return round(avg, 1) if avg else 0
+
+
+class AnswerSerializer(serializers.Serializer):
+    text = serializers.CharField()
+    is_correct = serializers.BooleanField()
+
+
+class QuestionSerializer(serializers.Serializer):
+    text = serializers.CharField()
+    options = AnswerSerializer(many=True)
+
+
+class QuizSerializer(serializers.Serializer):
+    title = serializers.CharField()
+    questions = QuestionSerializer(many=True)
