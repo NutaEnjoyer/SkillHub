@@ -3,16 +3,17 @@ from course.models import Course, Category, Module, Lesson
 from review.models import Review
 from django.db.models import Avg
 
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = "__all__"
 
 
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ModuleSerializer(serializers.ModelSerializer):
@@ -20,7 +21,7 @@ class ModuleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Module
-        fields = '__all__'
+        fields = "__all__"
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -31,10 +32,22 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'title', 'description', 'author', 'category', 'level', 'modules', 'created_at', 'updated_at', 'avg_rate']
-        read_only_fields = ['author', 'students', 'created_at', 'updated_at']
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "category",
+            "level",
+            "modules",
+            "created_at",
+            "updated_at",
+            "avg_rate",
+        ]
+        read_only_fields = ["author", "students", "created_at", "updated_at"]
 
     def get_avg_rate(self, obj):
-        avg = Review.objects.filter(course=obj).aggregate(avg_rating=Avg('rating'))['avg_rating']
+        avg = Review.objects.filter(course=obj).aggregate(avg_rating=Avg("rating"))[
+            "avg_rating"
+        ]
         return round(avg, 1) if avg else 0
-    

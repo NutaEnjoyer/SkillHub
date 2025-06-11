@@ -8,18 +8,19 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'full_name', 'password', 'role')
+        fields = ("email", "full_name", "password", "role")
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
+        password = validated_data.pop("password")
         user = User(**validated_data)
         user.set_password(password)
         user.save()
         return user
-    
+
 
 class UserSerializer(serializers.ModelSerializer):
     enrolled_courses = CourseSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
-        fields = ('id', 'email', 'full_name', 'role', 'enrolled_courses')
+        fields = ("id", "email", "full_name", "role", "enrolled_courses")

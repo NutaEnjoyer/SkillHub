@@ -8,15 +8,18 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from django.conf import settings
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken
+from drf_spectacular.utils import extend_schema
 import logging
 
 
 logger = logging.getLogger(__name__)
 
 
+@extend_schema(tags=["Auth"])
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(auth=[])
     def post(self, request):
         logger.info("RegisterView: POST request received")
         serializer = RegisterSerializer(data=request.data)
@@ -45,7 +48,11 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(tags=["Auth"])
 class LoginView(TokenObtainPairView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(auth=[])
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         refresh_token = response.data.pop("refresh")
@@ -63,9 +70,11 @@ class LoginView(TokenObtainPairView):
         return response
 
 
+@extend_schema(tags=["Auth"])
 class LogoutView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(auth=[])
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
         if refresh_token:
@@ -82,7 +91,11 @@ class LogoutView(APIView):
         return response
 
 
+@extend_schema(tags=["Auth"])
 class CookieTokenRefreshView(TokenRefreshView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(auth=[])
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get("refresh_token")
 
@@ -119,5 +132,3 @@ class CookieTokenRefreshView(TokenRefreshView):
             )
 
         return response
-
-
