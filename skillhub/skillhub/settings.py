@@ -16,10 +16,16 @@ from datetime import timedelta
 
 import os
 
+from decouple import Config, RepositoryEnv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+env_path = os.path.join(BASE_DIR.parent, "env", ".env")
+
+config = Config(RepositoryEnv(env_path))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -47,6 +53,7 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     "course.apps.CourseConfig",
     "review.apps.ReviewConfig",
+    "notification.apps.NotificationConfig",
     # 3rd party apps
     "rest_framework",
     "rest_framework_simplejwt",
@@ -163,3 +170,17 @@ SPECTACULAR_SETTINGS = {
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+
+
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT = config("EMAIL_PORT", cast=int)
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
