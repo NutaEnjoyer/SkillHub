@@ -4,9 +4,12 @@ from notification.models import Notification
 from django.core.exceptions import ObjectDoesNotExist
 from celery.utils.log import get_task_logger
 from django.conf import settings
+from core.email_utils import EmailService
 
 
 logger = get_task_logger(__name__)
+
+email_service = EmailService()
 
 
 @shared_task
@@ -17,12 +20,10 @@ def send_notification_email(notification_id):
     try:
         notification = Notification.objects.get(id=notification_id)
 
-        send_mail(
+        email_service.send(
             subject="notification.title",
             message=notification.message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[notification.user.email],
-            fail_silently=False,
+            to_email=notification.user.email,
         )
 
         notification.sent = True

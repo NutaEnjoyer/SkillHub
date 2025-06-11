@@ -3,8 +3,10 @@ from notification.models import Notification
 from rest_framework import viewsets
 from core.permissions import IsAdminOrReadOnly
 from notification.tasks import send_notification_email
+from drf_spectacular.utils import extend_schema
 
 
+@extend_schema(tags=["Notification"])
 class NotificationViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [IsAdminOrReadOnly]
