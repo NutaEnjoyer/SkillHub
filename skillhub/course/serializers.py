@@ -1,7 +1,7 @@
-from rest_framework import serializers
-from course.models import Course, Category, Module, Lesson
-from review.models import Review
+from course.models import Category, Course, Lesson, Module
 from django.db.models import Avg
+from rest_framework import serializers
+from review.models import Review
 
 
 class CategorySerializer(serializers.ModelSerializer):

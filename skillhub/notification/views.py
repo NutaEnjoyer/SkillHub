@@ -1,9 +1,9 @@
-from notification.serializers import NotificationSerializer
-from notification.models import Notification
-from rest_framework import viewsets
 from core.permissions import IsAdminOrReadOnly
-from notification.tasks import send_notification_email
 from drf_spectacular.utils import extend_schema
+from notification.models import Notification
+from notification.serializers import NotificationSerializer
+from notification.tasks import send_notification_email
+from rest_framework import viewsets
 
 
 @extend_schema(tags=["Notification"])

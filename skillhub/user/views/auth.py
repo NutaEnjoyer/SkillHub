@@ -1,16 +1,16 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from user.serializers import RegisterSerializer, UserSerializer
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
-from django.conf import settings
-from rest_framework_simplejwt.settings import api_settings
-from rest_framework_simplejwt.tokens import RefreshToken
-from drf_spectacular.utils import extend_schema
 import logging
 
+from django.conf import settings
+from drf_spectacular.utils import extend_schema
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.settings import api_settings
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from user.serializers import RegisterSerializer
 
 logger = logging.getLogger(__name__)
 

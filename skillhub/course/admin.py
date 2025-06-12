@@ -1,7 +1,7 @@
+from course.models import Category, Course, Lesson, Module
 from django.contrib import admin
-from course.models import Category, Course, Module, Lesson
-from review.models import Review
 from django.db.models import Avg
+from review.models import Review
 
 
 @admin.register(Category)

@@ -1,11 +1,8 @@
 from celery import shared_task
-from django.core.mail import send_mail
-from notification.models import Notification
-from django.core.exceptions import ObjectDoesNotExist
 from celery.utils.log import get_task_logger
-from django.conf import settings
 from core.email_utils import EmailService
-
+from django.core.exceptions import ObjectDoesNotExist
+from notification.models import Notification
 
 logger = get_task_logger(__name__)
 

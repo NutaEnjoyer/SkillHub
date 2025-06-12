@@ -1,16 +1,18 @@
-from rest_framework import viewsets, permissions
-from course.models import Category, Course, Module, Lesson, Quiz, Question, Answer
+from core.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
+from course.models import Answer, Category, Course, Lesson, Module, Question, Quiz
 from course.serializers import (
+    AnswerSerializer,
     CategorySerializer,
     CourseSerializer,
-    ModuleSerializer,
     LessonSerializer,
+    ModuleSerializer,
     QuestionSerializer,
-    AnswerSerializer,
     QuizSerializer,
 )
-from core.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from drf_spectacular.utils import extend_schema
+from notification.models import Notification
+from notification.tasks import send_notification_email
+from rest_framework import viewsets
 
 
 @extend_schema(tags=["Category"])
@@ -42,6 +44,17 @@ class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthorOrReadOnly]
+
+    def perform_create(self, serializer):
+        lesson = serializer.save()
+
+        students = lesson.module.course.students.all()
+        for student in students:
+            notification = Notification.objects.create(
+                user=student,
+                message=f"New lesson {lesson.title} added to course {lesson.module.course.title}",
+            )
+            send_notification_email.delay(notification.id)
 
 
 @extend_schema(tags=["Quiz"])

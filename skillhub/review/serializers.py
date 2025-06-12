@@ -1,6 +1,6 @@
+from course.models import Course
 from rest_framework import serializers
 from review.models import Review
-from course.models import Course
 
 
 class CourseShortSerializer(serializers.ModelSerializer):
