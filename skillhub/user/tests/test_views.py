@@ -108,3 +108,38 @@ class UserUpdateTest(APITestCase):
         response = self.client.patch(self.url, self.update_data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["full_name"], "UpdatedUser")
+
+
+class UserChangePasswordTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="test@example.com",
+            password="strong_password_12",
+            full_name="TestUser",
+        )
+        self.url = reverse("change_password")
+
+        self.password_data = {
+            "old_password": "strong_password_12",
+            "new_password": "new_strong_password_12",
+        }
+
+    def test_change_password(self):
+        self.password_data = {
+            "old_password": "strong_password_12",
+            "new_password": "new_strong_password_12",
+        }
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(self.url, self.password_data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["detail"], "Password updated successfully")
+
+    def test_change_password_with_wrong_old_password(self):
+        self.password_data = {
+            "old_password": "wrong_password",
+            "new_password": "new_strong_password_12",
+        }
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(self.url, self.password_data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["old_password"], "Wrong password")

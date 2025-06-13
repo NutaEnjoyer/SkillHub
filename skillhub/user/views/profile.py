@@ -36,7 +36,7 @@ class ChangePasswordView(generics.UpdateAPIView):
 
         if not user.check_password(serializer.validated_data["old_password"]):
             return Response(
-                {"old_password": ["Wrong password."]},
+                {"old_password": "Wrong password"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
