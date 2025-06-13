@@ -68,7 +68,12 @@ class ChangePasswordView(generics.UpdateAPIView):
         user = self.get_object()
         serializer = self.get_serializer(data=request.data)
 
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            logger.warning(
+                f"Error while changing password for user {user.email}: {str(e)}"
+            )
 
         if not user.check_password(serializer.validated_data["old_password"]):
             return Response(
@@ -78,6 +83,8 @@ class ChangePasswordView(generics.UpdateAPIView):
 
         user.set_password(serializer.validated_data["new_password"])
         user.save()
+
+        logger.info(f"Password updated successfully for user {user.email}")
 
         return Response(
             {"detail": "Password updated successfully"}, status=status.HTTP_200_OK

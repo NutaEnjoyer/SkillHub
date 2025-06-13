@@ -58,7 +58,10 @@ class RegisterView(APIView):
                 samesite="Lax",
             )
 
+            logger.info(f"User {user.email} registered successfully")
             return response
+
+        logger.warning(f"Login failed for email: {request.data.email}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -82,6 +85,7 @@ class LoginView(TokenObtainPairView):
         Returns:
             Response: { "access": <access_token> }
         """
+
         response = super().post(request, *args, **kwargs)
         refresh_token = response.data.pop("refresh")
 
@@ -94,7 +98,7 @@ class LoginView(TokenObtainPairView):
                 max_age=int(api_settings.REFRESH_TOKEN_LIFETIME.total_seconds()),
                 samesite="Lax",
             )
-
+        logger.info(f"User {request.data.email} logged in successfully")
         return response
 
 
@@ -128,6 +132,9 @@ class LogoutView(APIView):
             {"message": "Logged out successfully"}, status=status.HTTP_200_OK
         )
         response.delete_cookie("refresh_token")
+
+        logger.info(f"User {request.user.email} logged out successfully")
+
         return response
 
 
@@ -164,8 +171,12 @@ class CookieTokenRefreshView(TokenRefreshView):
         try:
             serializer.is_valid(raise_exception=True)
         except TokenError as e:
+            logger.warning(f"Error while refreshing tokens: {str(e)}")
+
             return Response(
-                {"detail": f"Error while refreshing tokens: {str(e)}"},
+                {
+                    "detail": f"Error while refreshing tokens to user {request.user.email}: {str(e)}"
+                },
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
@@ -184,5 +195,7 @@ class CookieTokenRefreshView(TokenRefreshView):
                 max_age=int(api_settings.REFRESH_TOKEN_LIFETIME.total_seconds()),
                 path="/",
             )
+
+        logger.info(f"User {request.user.email} refreshed tokens successfully")
 
         return response
