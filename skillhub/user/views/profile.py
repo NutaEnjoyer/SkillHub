@@ -12,23 +12,59 @@ logger = logging.getLogger(__name__)
 
 @extend_schema(tags=["Profile"])
 class ProfileView(generics.RetrieveUpdateAPIView):
+    """
+    Endpoint for retrieve and update users.
+
+    - GET /profile/: Retrieve the authenticated user's profile.
+    - PUT/PATCH /profile/: Update the authenticated user's profile.
+    """
+
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
+        """
+        Get the object to be updated.
+
+        Returns:
+            User: The authenticated user.
+        """
         return self.request.user
 
 
 @extend_schema(tags=["Profile"])
 class ChangePasswordView(generics.UpdateAPIView):
+    """
+    Endpoint for change password.
+
+    - PUT/PATCH /change-password/: Change the password of the authenticated user.
+    """
+
     serializer_class = ChangePasswordSerializer
     model = get_user_model()
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
+        """
+        Get the object to be updated.
+
+        Returns:
+            User: The authenticated user.
+        """
         return self.request.user
 
     def update(self, request, *args, **kwargs):
+        """
+        Update the password for the authenticated user.
+
+        Args:
+            request (Request): The HTTP request object.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Response: {"detail": "Password updated successfully"}.
+        """
         user = self.get_object()
         serializer = self.get_serializer(data=request.data)
 

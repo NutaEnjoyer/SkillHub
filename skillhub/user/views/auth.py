@@ -17,11 +17,26 @@ logger = logging.getLogger(__name__)
 
 @extend_schema(tags=["Auth"])
 class RegisterView(APIView):
+    """
+    Endpoint for registering a new user.
+
+    - POST /register/: Create a new user.
+    """
+
     permission_classes = [AllowAny]
 
     @extend_schema(auth=[])
     def post(self, request):
-        logger.info("RegisterView: POST request received")
+        """
+        Handle user registration.
+
+        Creates a new user and returns an access token.
+        Also sets a refresh token as an HTTP-only cookie.
+
+        Returns:
+            Response: { "access": <access_token> }
+        """
+        logger.info(f"RegisterView: POST request received: {request.data}")
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
@@ -50,10 +65,24 @@ class RegisterView(APIView):
 
 @extend_schema(tags=["Auth"])
 class LoginView(TokenObtainPairView):
+    """
+    Endpoint for logging in a user.
+
+    - POST /login/: Login a user.
+    """
+
     permission_classes = [AllowAny]
 
     @extend_schema(auth=[])
     def post(self, request, *args, **kwargs):
+        """
+        Authenticate user and return access token.
+
+        Sets a refresh token as an HTTP-only cookie.
+
+        Returns:
+            Response: { "access": <access_token> }
+        """
         response = super().post(request, *args, **kwargs)
         refresh_token = response.data.pop("refresh")
 
@@ -72,10 +101,22 @@ class LoginView(TokenObtainPairView):
 
 @extend_schema(tags=["Auth"])
 class LogoutView(APIView):
+    """
+    Endpoint for logout a user.
+
+    - POST /logout/: Logout a user.
+    """
+
     permission_classes = [AllowAny]
 
     @extend_schema(auth=[])
     def post(self, request):
+        """
+        Logout user and remove refresh token from cookie.
+
+        Returns:
+            Response: { "message": "Logged out successfully" }
+        """
         refresh_token = request.COOKIES.get("refresh_token")
         if refresh_token:
             try:
@@ -93,10 +134,24 @@ class LogoutView(APIView):
 
 @extend_schema(tags=["Auth"])
 class CookieTokenRefreshView(TokenRefreshView):
+    """
+    Endpoint for refreshing tokens using refresh token from cookies.
+
+    - POST /token/refresh/: Refresh access token using refresh token.
+    """
+
     permission_classes = [AllowAny]
 
     @extend_schema(auth=[])
     def post(self, request, *args, **kwargs):
+        """
+        Refresh a access and refresh token using refresh token.
+
+        Automatically refresh refresh token to the response HTTP-only cookie.
+
+        Returns:
+            Response: { "access": <access_token> }
+        """
         refresh_token = request.COOKIES.get("refresh_token")
 
         if refresh_token is None:
