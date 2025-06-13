@@ -1,4 +1,4 @@
-from course.models import Category, Course, Lesson, Module
+from course.models import Answer, Category, Course, Lesson, Module, Question, Quiz
 from django.db.models import Avg
 from rest_framework import serializers
 from review.models import Review
@@ -53,7 +53,7 @@ class CourseSerializer(serializers.ModelSerializer):
     """
 
     modules = ModuleSerializer(many=True, read_only=True)
-    category = CategorySerializer(read_only=True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     author = serializers.StringRelatedField(read_only=True)
     avg_rate = serializers.SerializerMethodField()
 
@@ -84,7 +84,7 @@ class CourseSerializer(serializers.ModelSerializer):
         return round(avg, 1) if avg else 0
 
 
-class AnswerSerializer(serializers.Serializer):
+class AnswerSerializer(serializers.ModelSerializer):
     """
     Answer serializer for quiz questions.
 
@@ -92,11 +92,16 @@ class AnswerSerializer(serializers.Serializer):
     - `is_correct`: Indicates whether the answer is correct.
     """
 
+    question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
     text = serializers.CharField()
     is_correct = serializers.BooleanField()
 
+    class Meta:
+        model = Answer
+        fields = ["question", "text", "is_correct"]
 
-class QuestionSerializer(serializers.Serializer):
+
+class QuestionSerializer(serializers.ModelSerializer):
     """
     Question serializer for quiz questions.
 
@@ -104,17 +109,28 @@ class QuestionSerializer(serializers.Serializer):
     - `options`: The options for the question.
     """
 
+    quiz = serializers.PrimaryKeyRelatedField(queryset=Quiz.objects.all())
     text = serializers.CharField()
-    options = AnswerSerializer(many=True)
+    options = AnswerSerializer(many=True, required=False)
+
+    class Meta:
+        model = Question
+        fields = ["quiz", "question_text", "options"]
 
 
-class QuizSerializer(serializers.Serializer):
+class QuizSerializer(serializers.ModelSerializer):
     """
     Quiz serializer for quizzes.
 
+    - `lesson`: The lesson associated with the quiz.
     - `title`: The title of the quiz.
     - `questions`: The questions in the quiz.
     """
 
+    lesson = serializers.PrimaryKeyRelatedField(queryset=Lesson.objects.all())
     title = serializers.CharField()
-    questions = QuestionSerializer(many=True)
+    questions = QuestionSerializer(many=True, required=False)
+
+    class Meta:
+        model = Quiz
+        fields = ["lesson", "title", "questions"]
