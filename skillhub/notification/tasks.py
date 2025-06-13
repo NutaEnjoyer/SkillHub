@@ -11,6 +11,20 @@ email_service = EmailService()
 
 @shared_task
 def send_notification_email(notification_id):
+    """
+    Send a notification email to the user associated with the given notification ID.
+
+    Args:
+        notification_id: The ID of the notification to send.
+
+    Raises:
+        ObjectDoesNotExist: If the notification with the given ID does not exist.
+        Exception: If an error occurs while sending the email.
+
+    Returns:
+        None
+    """
+
     logger.info(
         f"Sending notification email for notification with id {notification_id}"
     )

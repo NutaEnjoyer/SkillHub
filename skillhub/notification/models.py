@@ -3,6 +3,15 @@ from django.db import models
 
 
 class Notification(models.Model):
+    """
+    Notification model for sending notifications to users.
+
+    - `user`: The user to whom the notification is sent.
+    - `message`: The message of the notification.
+    - `created_at`: The date and time when the notification was created.
+    - `sent`: Indicates whether the notification has been sent.
+    """
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications"
     )
