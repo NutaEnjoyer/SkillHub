@@ -3,6 +3,13 @@ from django.db import models
 
 
 class Category(models.Model):
+    """
+    Category model for courses.
+
+    - `name`: The name of the category.
+    - `description`: The description of the category.
+    """
+
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
 
@@ -15,6 +22,18 @@ class Category(models.Model):
 
 
 class Course(models.Model):
+    """
+    Course model for skillhub.
+
+    - `author`: The user who created the course.
+    - `title`: The title of the course.
+    - `description`: The description of the course.
+    - `category`: The category to which the course belongs.
+    - `level`: The level of the course (beginner, intermediate, advanced).
+    - `students`: The list of students enrolled in the course.
+    - `created_at`: The date when the course was created.
+    """
+
     LEVEL_CHOICES = [
         ("beginner", "Beginner"),
         ("intermediate", "Intermediate"),
@@ -50,6 +69,15 @@ class Course(models.Model):
 
 
 class Module(models.Model):
+    """
+    Module model for courses.
+
+    - `course`: The course to which the module belongs.
+    - `title`: The title of the module.
+    - `description`: The description of the module.
+    - `order`: The order of the module in the course.
+    """
+
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="modules")
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -65,6 +93,10 @@ class Module(models.Model):
         return f"{self.title} (Course: {self.course.title})"
 
     def save(self, *args, **kwargs):
+        """
+        Override the save method to set the order based on the previous module's order.
+        """
+
         if self._state.adding and self.order == 0:
             last_order = (
                 Module.objects.filter(course=self.course).order_by("-order").first()
@@ -74,6 +106,17 @@ class Module(models.Model):
 
 
 class Lesson(models.Model):
+    """
+    Lsson model for courses.
+
+    - `module`: The module to which the lesson belongs.
+    - `title`: The title of the lesson.
+    - `content`: The content of the lesson.
+    - `video_url`: The URL of the video for the lesson.
+    - `pdf_file`: The PDF file for the lesson.
+    - `order`: The order of the lesson in the module.
+    """
+
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name="lessons")
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True)
@@ -90,6 +133,10 @@ class Lesson(models.Model):
         return f"{self.title} (Module: {self.module.title}) (Course: {self.module.course.title})"
 
     def save(self, *args, **kwargs):
+        """
+        Override the save method to set the order based on the previous lesson's order.
+        """
+
         if self._state.adding and self.order == 0:
             last_order = (
                 Lesson.objects.filter(module=self.module).order_by("-order").first()
@@ -99,6 +146,13 @@ class Lesson(models.Model):
 
 
 class Quiz(models.Model):
+    """
+    Quiz model for lessons.
+
+    - `lesson`: The lesson to which the quiz belongs.
+    - `title`: The title of the quiz.
+    """
+
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name="quiz")
     title = models.CharField(max_length=255)
 
@@ -111,6 +165,13 @@ class Quiz(models.Model):
 
 
 class Question(models.Model):
+    """
+    Question model for quizzes.
+
+    - `quiz`: The quiz to which the question belongs.
+    - `question_text`: The text of the question.
+    """
+
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
     question_text = models.TextField()
 
@@ -123,6 +184,14 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
+    """
+    Answer model for questions.
+
+    - `question`: The question to which the answer belongs.
+    - `option_text`: The text of the answer option.
+    - `is_correct`: Whether the answer is correct or not.
+    """
+
     question = models.ForeignKey(
         Question, on_delete=models.CASCADE, related_name="options"
     )

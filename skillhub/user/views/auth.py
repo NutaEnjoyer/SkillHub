@@ -36,7 +36,6 @@ class RegisterView(APIView):
         Returns:
             Response: { "access": <access_token> }
         """
-        logger.info(f"RegisterView: POST request received: {request.data}")
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()

@@ -5,18 +5,30 @@ from review.models import Review
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """
+    Category serializer for categories.
+    """
+
     class Meta:
         model = Category
         fields = "__all__"
 
 
 class LessonSerializer(serializers.ModelSerializer):
+    """
+    Lesson serializer for lessons.
+    """
+
     class Meta:
         model = Lesson
         fields = "__all__"
 
 
 class ModuleSerializer(serializers.ModelSerializer):
+    """
+    Module serializer for modules.
+    """
+
     lessons = LessonSerializer(many=True, read_only=True)
 
     class Meta:
@@ -25,6 +37,21 @@ class ModuleSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    """
+    Course serializer for courses.
+
+    - `id`: The ID of the course.
+    - `title`: The title of the course.
+    - `description`: The description of the course.
+    - `author`: The author of the course.
+    - `category`: The category of the course.
+    - `level`: The level of the course.
+    - `modules`: The modules of the course.
+    - `created_at`: The date when the course was created.
+    - `updated_at`: The date when the course was last updated.
+    - `avg_rate`: The average rating of the course.
+    """
+
     modules = ModuleSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
     author = serializers.StringRelatedField(read_only=True)
@@ -47,6 +74,10 @@ class CourseSerializer(serializers.ModelSerializer):
         read_only_fields = ["author", "students", "created_at", "updated_at"]
 
     def get_avg_rate(self, obj):
+        """
+        Aggregate the average rating for the course.
+        """
+
         avg = Review.objects.filter(course=obj).aggregate(avg_rating=Avg("rating"))[
             "avg_rating"
         ]
@@ -54,15 +85,36 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.Serializer):
+    """
+    Answer serializer for quiz questions.
+
+    - `text`: The text of the answer.
+    - `is_correct`: Indicates whether the answer is correct.
+    """
+
     text = serializers.CharField()
     is_correct = serializers.BooleanField()
 
 
 class QuestionSerializer(serializers.Serializer):
+    """
+    Question serializer for quiz questions.
+
+    - `text`: The text of the question.
+    - `options`: The options for the question.
+    """
+
     text = serializers.CharField()
     options = AnswerSerializer(many=True)
 
 
 class QuizSerializer(serializers.Serializer):
+    """
+    Quiz serializer for quizzes.
+
+    - `title`: The title of the quiz.
+    - `questions`: The questions in the quiz.
+    """
+
     title = serializers.CharField()
     questions = QuestionSerializer(many=True)
