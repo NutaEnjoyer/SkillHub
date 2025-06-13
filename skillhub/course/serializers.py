@@ -93,12 +93,12 @@ class AnswerSerializer(serializers.ModelSerializer):
     """
 
     question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
-    text = serializers.CharField()
+    option_text = serializers.CharField()
     is_correct = serializers.BooleanField()
 
     class Meta:
         model = Answer
-        fields = ["question", "text", "is_correct"]
+        fields = ["question", "option_text", "is_correct"]
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -110,7 +110,7 @@ class QuestionSerializer(serializers.ModelSerializer):
     """
 
     quiz = serializers.PrimaryKeyRelatedField(queryset=Quiz.objects.all())
-    text = serializers.CharField()
+    question_text = serializers.CharField()
     options = AnswerSerializer(many=True, required=False)
 
     class Meta:

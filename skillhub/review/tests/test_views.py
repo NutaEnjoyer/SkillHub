@@ -70,8 +70,6 @@ class ReviewListTest(BaseTest):
 
         response = self.client.get(self.url)
 
-        print(f"response: {response.data}")
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["rating"], 5)
