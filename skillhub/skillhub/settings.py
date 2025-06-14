@@ -168,6 +168,26 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
 }
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+        "mongo": {
+            "class": "core.mongo_logger.MongoHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console", "mongo"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "INFO", "propagate": False},
+    },
+}
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
@@ -184,3 +204,6 @@ EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+
+MONGO_URI = config("MONGO_URI")
+MONGO_DB_NAME = config("MONGO_DB_NAME")
