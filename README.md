@@ -1,4 +1,4 @@
-# SkillHub is a Django REST Framework-based educational platform for instructors and students
+# 🐍 SkillHub is a Django REST Framework-based educational platform for instructors and students
 
 ## 📦 Стек
 - Django REST Framework
@@ -6,6 +6,28 @@
 - Redis 
 - Celery
 - Docker + docker-compose
+
+---
+
+```
+             /^\/^\
+           _|__|  O|
+  \/     /~     \_/ \
+   \____|__________/  \
+          \_______      \
+                  `\     \                 \
+                    |     |                  \
+                   /      /                    \
+                  /     /                       \\
+                /      /                         \ \
+               /     /                            \  \
+             /     /             _----_            \   \
+            /     /           _-~      ~-_         |   |
+           (      (        _-~    _--_    ~-_     _/   |
+            \      ~-____-~    _-~    ~-_    ~-_-~    /
+              ~-_           _-~          ~-_       _-~
+                 ~--______-~                ~-___-~
+```
 
 ---
 
